@@ -9,17 +9,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/task")
 public class TaskController {
+
     private final TaskQueueService queueService;
+
     public TaskController(TaskQueueService queueService){
-        this.queueService=queueService;
+        this.queueService = queueService;
     }
 
     @PostMapping
-    public String createTask(@RequestParam String data){
-        String id= UUID.randomUUID().toString();
-        Task task= new Task(id,data);
+    public Task createTask(@RequestParam String data){
+        Task task = new Task(UUID.randomUUID().toString(), data);
         queueService.addTask(task);
-        return "Task submitted with id: "+id;
+        return task;
     }
 
     @GetMapping("/{id}")
