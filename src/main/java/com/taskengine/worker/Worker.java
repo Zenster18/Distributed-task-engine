@@ -3,27 +3,31 @@ package com.taskengine.worker;
 import com.taskengine.model.Task;
 import com.taskengine.service.TaskQueueService;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class Worker {
 
     private final TaskQueueService queueService;
 
+    private final ExecutorService executor = Executors.newFixedThreadPool(3);
+
     public Worker(TaskQueueService queueService){
         this.queueService = queueService;
     }
 
     @PostConstruct
-    public void startWorker(){
+    public void startWorkers() {
 
-        int numberOfWorkers = 3;
-
-        for(int i = 1; i <= numberOfWorkers; i++){
+        for(int i = 1; i <= 3; i++) {
 
             int workerId = i;
 
-            new Thread(() -> {
+            executor.submit(() -> {
 
                 while(true) {
 
@@ -31,16 +35,14 @@ public class Worker {
 
                     if(redisTask == null) continue;
 
-                    // 🔥 Get original object from map
                     Task task = queueService.getExistingTask(redisTask.getId());
-
                     if(task == null) continue;
 
                     System.out.println("Worker-" + workerId + " Processing: " + task.getId());
 
                     try {
                         if(Math.random() < 0.5){
-                            throw new RuntimeException("Simulated Failure");
+                            throw new RuntimeException("Simulated failure");
                         }
 
                         Thread.sleep(3000);
@@ -60,10 +62,10 @@ public class Worker {
                             task.setStatus("RETRYING");
                             queueService.updateTask(task);
 
-                            // 🔥 Re-add for retry
                             queueService.addTask(task);
 
                         } else {
+
                             System.out.println("FAILED permanently: " + task.getId());
 
                             task.setStatus("FAILED");
@@ -71,8 +73,12 @@ public class Worker {
                         }
                     }
                 }
-
-            }, "Worker-" + workerId).start();
+            });
         }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        executor.shutdown();
     }
 }
