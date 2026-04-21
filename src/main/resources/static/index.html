@@ -1,124 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distributed Task Engine</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-          --bg: #ffffff;
-          --bg-secondary: #f7f7f5;
-          --bg-tertiary: #f0efec;
-          --text-primary: #1a1a1a;
-          --text-secondary: #5c5c5c;
-          --text-tertiary: #999;
-          --border: rgba(0,0,0,0.12);
-          --border-mid: rgba(0,0,0,0.2);
-          --radius-md: 8px;
-          --radius-lg: 12px;
-          --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          --font-mono: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+          --bg: #f5f5f3;
+          --surface: #ffffff;
+          --border: rgba(0,0,0,0.1);
+          --border-mid: rgba(0,0,0,0.18);
+          --text: #1a1a1a;
+          --text-muted: #666;
+          --text-faint: #999;
+          --radius: 10px;
+          --radius-sm: 6px;
+          --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+          --mono: "SF Mono", "Fira Code", "Cascadia Code", monospace;
         }
 
         body {
           font-family: var(--font);
-          background: var(--bg-secondary);
-          color: var(--text-primary);
+          background: var(--bg);
+          color: var(--text);
           min-height: 100vh;
         }
 
+        /* Header */
         header {
-          background: var(--bg);
+          background: var(--surface);
           border-bottom: 0.5px solid var(--border);
           padding: 0 2rem;
-          height: 52px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .logo {
+          height: 54px;
           display: flex;
           align-items: center;
           gap: 10px;
-          font-size: 14px;
-          font-weight: 500;
-          color: var(--text-primary);
         }
 
         .logo-icon {
-          width: 28px;
-          height: 28px;
-          background: #1a1a1a;
-          border-radius: 7px;
+          width: 30px;
+          height: 30px;
+          background: #111;
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
 
         .logo-icon svg { width: 16px; height: 16px; }
 
-        .header-right {
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        .logo-text {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--text);
         }
 
-        .url-input {
-          font-size: 12px;
-          padding: 5px 10px;
-          border: 0.5px solid var(--border-mid);
-          border-radius: var(--radius-md);
-          background: var(--bg-secondary);
-          color: var(--text-primary);
-          width: 200px;
-          font-family: var(--font-mono);
-          outline: none;
-        }
-
-        .url-input:focus { border-color: #378ADD; box-shadow: 0 0 0 2px rgba(55,138,221,.12); }
-
-        .url-label { font-size: 12px; color: var(--text-secondary); }
-
-        main {
-          max-width: 1100px;
+        /* Main layout */
+        .container {
+          max-width: 960px;
           margin: 0 auto;
           padding: 2rem 1.5rem;
           display: flex;
           flex-direction: column;
-          gap: 1.75rem;
+          gap: 1.5rem;
         }
 
+        /* Section label */
         .section-label {
           font-size: 11px;
           font-weight: 500;
-          color: var(--text-tertiary);
+          color: var(--text-faint);
           letter-spacing: .08em;
           text-transform: uppercase;
-          margin-bottom: .75rem;
+          margin-bottom: .65rem;
         }
 
-        /* Metrics */
-        .metric-grid {
+        /* Card */
+        .card {
+          background: var(--surface);
+          border: 0.5px solid var(--border);
+          border-radius: var(--radius);
+          padding: 1.25rem 1.5rem;
+        }
+
+        /* Form row */
+        .form-row {
+          display: flex;
+          gap: 10px;
+          align-items: flex-end;
+          flex-wrap: wrap;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .form-group label {
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--text-muted);
+        }
+
+        select, input[type="text"] {
+          font-family: var(--font);
+          font-size: 13px;
+          padding: 8px 12px;
+          border: 0.5px solid var(--border-mid);
+          border-radius: var(--radius-sm);
+          background: var(--surface);
+          color: var(--text);
+          outline: none;
+          transition: border-color .15s, box-shadow .15s;
+          height: 36px;
+        }
+
+        select { min-width: 180px; cursor: pointer; }
+        input[type="text"] { min-width: 220px; flex: 1; }
+
+        select:focus, input[type="text"]:focus {
+          border-color: #378ADD;
+          box-shadow: 0 0 0 2px rgba(55,138,221,.12);
+        }
+
+        button {
+          font-family: var(--font);
+          font-size: 13px;
+          font-weight: 500;
+          padding: 0 18px;
+          height: 36px;
+          background: #111;
+          color: #fff;
+          border: none;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: opacity .15s;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        button:hover { opacity: .82; }
+        button:active { transform: scale(.98); }
+
+        /* Stats row */
+        .stats-row {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 10px;
         }
 
-        .metric {
-          background: var(--bg);
+        .stat-card {
+          background: var(--surface);
           border: 0.5px solid var(--border);
-          border-radius: var(--radius-lg);
-          padding: 1rem 1.25rem;
+          border-radius: var(--radius);
+          padding: .9rem 1.1rem;
         }
 
-        .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
-        .metric-val { font-size: 26px; font-weight: 500; color: var(--text-primary); }
-        .metric-val.green { color: #1D9E75; }
-        .metric-val.amber { color: #BA7517; }
-        .metric-val.red   { color: #A32D2D; }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .stat-val   { font-size: 24px; font-weight: 500; color: var(--text); }
+        .stat-val.green  { color: #1D9E75; }
+        .stat-val.orange { color: #BA7517; }
+        .stat-val.red    { color: #A32D2D; }
+
+        /* Table */
+        .table-wrap {
+          overflow-x: auto;
+          border-radius: var(--radius);
+          border: 0.5px solid var(--border);
+          background: var(--surface);
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+        }
+
+        thead tr {
+          border-bottom: 0.5px solid var(--border);
+        }
+
+        th {
+          padding: 10px 16px;
+          text-align: left;
+          font-size: 11px;
+          font-weight: 500;
+          color: var(--text-faint);
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          background: #fafaf9;
+        }
+
+        td {
+          padding: 11px 16px;
+          border-bottom: 0.5px solid var(--border);
+          color: var(--text);
+          vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #fafaf9; }
+
+        .task-id {
+          font-family: var(--mono);
+          font-size: 12px;
+          color: var(--text-muted);
+        }
+
+        .type-badge {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 500;
+          padding: 2px 9px;
+          border-radius: 20px;
+          background: #f0efec;
+          color: #444;
+          letter-spacing: .02em;
+        }
+
+        /* Status pills — class names match original exactly */
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 500;
+          padding: 3px 10px;
+          border-radius: 20px;
+        }
+
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .PENDING   { background: #FAEEDA; color: #BA7517; }
+        .RETRYING  { background: #EEEDFE; color: #534AB7; }
+        .COMPLETED { background: #EAF3DE; color: #3B6D11; }
+        .FAILED    { background: #FCEBEB; color: #A32D2D; }
+
+        .PENDING   .status-dot { background: #EF9F27; }
+        .RETRYING  .status-dot { background: #534AB7; }
+        .COMPLETED .status-dot { background: #1D9E75; }
+        .FAILED    .status-dot { background: #E24B4A; }
+
+        .retry-val {
+          font-family: var(--mono);
+          font-size: 12px;
+          color: var(--text-muted);
+        }
+
+        .retry-bar-wrap {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .retry-bar {
+          width: 48px;
+          height: 4px;
+          background: #eee;
+          border-radius: 2px;
+          overflow: hidden;
+        }
+
+        .retry-bar-fill {
+          height: 100%;
+          background: #EF9F27;
+          border-radius: 2px;
+          transition: width .3s ease;
+        }
+
+        /* Empty state */
+        .empty-row td {
+          text-align: center;
+          padding: 2.5rem;
+          color: var(--text-faint);
+          font-size: 13px;
+        }
 
         /* Workers */
         .workers-grid {
@@ -128,9 +293,9 @@
         }
 
         .worker-card {
-          background: var(--bg);
+          background: var(--surface);
           border: 0.5px solid var(--border);
-          border-radius: var(--radius-lg);
+          border-radius: var(--radius);
           padding: 1rem 1.25rem;
         }
 
@@ -141,277 +306,91 @@
           margin-bottom: .5rem;
         }
 
-        .worker-id { font-size: 13px; font-weight: 500; }
+        .worker-id { font-size: 13px; font-weight: 500; color: var(--text); }
 
-        .badge {
+        .w-badge {
           font-size: 11px;
           font-weight: 500;
           padding: 2px 9px;
           border-radius: 20px;
         }
 
-        .badge-busy  { background: #EAF3DE; color: #3B6D11; }
-        .badge-idle  { background: #F1EFE8; color: #5F5E5A; }
-        .badge-error { background: #FCEBEB; color: #A32D2D; }
+        .w-busy  { background: #EAF3DE; color: #3B6D11; }
+        .w-idle  { background: #f0efec; color: #5F5E5A; }
+        .w-error { background: #FCEBEB; color: #A32D2D; }
 
         .worker-task {
           font-size: 12px;
-          color: var(--text-secondary);
+          color: var(--text-muted);
+          font-family: var(--mono);
           margin-bottom: .6rem;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          font-family: var(--font-mono);
         }
 
-        .progress-bar {
+        .worker-progress {
           height: 4px;
-          background: var(--bg-tertiary);
+          background: #eee;
           border-radius: 2px;
           overflow: hidden;
           margin-bottom: .5rem;
         }
 
-        .progress-fill {
+        .worker-progress-fill {
           height: 100%;
           border-radius: 2px;
           transition: width .5s ease;
         }
 
-        .pf-green { background: #1D9E75; }
-        .pf-gray  { background: #ccc; }
-        .pf-amber { background: #EF9F27; }
+        .wpf-green { background: #1D9E75; }
+        .wpf-gray  { background: #ccc; }
+        .wpf-amber { background: #EF9F27; }
 
-        .worker-meta {
-          font-size: 11px;
-          color: var(--text-tertiary);
-        }
+        .worker-meta { font-size: 11px; color: var(--text-faint); }
 
-        /* Two column layout */
-        .two-col {
-          display: grid;
-          grid-template-columns: 1fr 1.5fr;
-          gap: 1.5rem;
-          align-items: start;
-        }
-
-        /* Form */
-        .card {
-          background: var(--bg);
-          border: 0.5px solid var(--border);
-          border-radius: var(--radius-lg);
-          padding: 1.25rem;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .9rem; }
-        .form-group label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
-
-        .form-group input {
-          width: 100%;
-          font-size: 13px;
-          padding: 8px 10px;
-          border: 0.5px solid var(--border-mid);
-          border-radius: var(--radius-md);
-          background: var(--bg);
-          color: var(--text-primary);
-          outline: none;
-          font-family: var(--font);
-        }
-
-        .form-group input:focus { border-color: #378ADD; box-shadow: 0 0 0 2px rgba(55,138,221,.12); }
-        .form-hint { font-size: 11px; color: var(--text-tertiary); }
-
-        .submit-btn {
-          width: 100%;
-          padding: 9px;
-          border: none;
-          border-radius: var(--radius-md);
-          background: #1a1a1a;
-          color: #fff;
-          font-size: 13px;
-          font-weight: 500;
-          cursor: pointer;
-          font-family: var(--font);
-          transition: opacity .15s;
-        }
-
-        .submit-btn:hover { opacity: .82; }
-        .submit-btn:active { transform: scale(.98); }
-        .submit-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-        .toast {
-          font-size: 12px;
-          padding: 8px 12px;
-          border-radius: var(--radius-md);
-          margin-top: .75rem;
-          display: none;
-        }
-
-        .toast.ok  { background: #EAF3DE; color: #3B6D11; display: block; }
-        .toast.err { background: #FCEBEB; color: #A32D2D; display: block; }
-
-        .api-note {
-          font-size: 11px;
-          color: var(--text-tertiary);
-          padding: 8px 10px;
-          background: var(--bg-secondary);
-          border-radius: var(--radius-md);
-          border-left: 2px solid var(--border-mid);
-          margin-top: 1rem;
-          line-height: 1.5;
-        }
-
-        /* Log */
-        .log-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: .75rem;
-        }
-
-        .poll-btn {
-          font-size: 12px;
-          padding: 4px 12px;
-          border: 0.5px solid var(--border-mid);
-          border-radius: var(--radius-md);
-          background: transparent;
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-family: var(--font);
-        }
-
-        .poll-btn:hover { background: var(--bg-secondary); }
-
-        .log-list {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          max-height: 360px;
-          overflow-y: auto;
-        }
-
-        .log-row {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          padding: 9px 10px;
-          border-radius: var(--radius-md);
-          background: var(--bg-secondary);
-          font-size: 12px;
-          cursor: pointer;
-          transition: background .1s;
-          border: 0.5px solid transparent;
-        }
-
-        .log-row:hover { background: var(--bg-tertiary); border-color: var(--border); }
-
-        .log-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          flex-shrink: 0;
-          margin-top: 3px;
-        }
-
-        .dot-COMPLETED { background: #1D9E75; }
-        .dot-PENDING   { background: #EF9F27; }
-        .dot-RETRYING  { background: #378ADD; }
-        .dot-FAILED    { background: #E24B4A; }
-        .dot-local     { background: #aaa; }
-
-        .log-info { flex: 1; min-width: 0; }
-
-        .log-name {
-          font-weight: 500;
-          color: var(--text-primary);
-          margin-bottom: 2px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .log-meta { color: var(--text-tertiary); font-size: 11px; }
-
-        .log-right {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 3px;
-          flex-shrink: 0;
-        }
-
-        .status-pill {
-          font-size: 10px;
-          font-weight: 500;
-          padding: 2px 8px;
-          border-radius: 20px;
-        }
-
-        .pill-COMPLETED { background: #EAF3DE; color: #3B6D11; }
-        .pill-PENDING   { background: #FAEEDA; color: #BA7517; }
-        .pill-RETRYING  { background: #E6F1FB; color: #185FA5; }
-        .pill-FAILED    { background: #FCEBEB; color: #A32D2D; }
-        .pill-local     { background: #F1EFE8; color: #5F5E5A; }
-
-        .retry-badge { font-size: 10px; color: var(--text-tertiary); }
-
-        .empty-state {
-          text-align: center;
-          padding: 2.5rem 1rem;
-          color: var(--text-tertiary);
-          font-size: 13px;
-        }
-
-        @media (max-width: 720px) {
-          .metric-grid { grid-template-columns: repeat(2,1fr); }
+        @media (max-width: 640px) {
+          .stats-row { grid-template-columns: repeat(2,1fr); }
           .workers-grid { grid-template-columns: 1fr; }
-          .two-col { grid-template-columns: 1fr; }
-          header { padding: 0 1rem; }
-          .url-label, .url-input { display: none; }
+          .form-row { flex-direction: column; }
+          select, input[type="text"] { min-width: 100%; width: 100%; }
+          button { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
-        <div class="logo-icon">
-            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="2" width="5" height="5" rx="1" fill="white"/>
-                <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity=".6"/>
-                <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity=".6"/>
-                <rect x="9" y="9" width="5" height="5" rx="1" fill="white" opacity=".3"/>
-            </svg>
-        </div>
-        Distributed Task Engine
+    <div class="logo-icon">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="5" height="5" rx="1" fill="white"/>
+            <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity=".6"/>
+            <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity=".6"/>
+            <rect x="9" y="9" width="5" height="5" rx="1" fill="white" opacity=".3"/>
+        </svg>
     </div>
-    <div class="header-right">
-        <span class="url-label">Base URL</span>
-        <input class="url-input" type="text" id="base-url" value="http://localhost:8080" />
-    </div>
+    <span class="logo-text">Distributed Task Engine</span>
 </header>
 
-<main>
+<div class="container">
 
-    <!-- Metrics -->
-    <div class="metric-grid">
-        <div class="metric">
-            <div class="metric-label">Total submitted</div>
-            <div class="metric-val" id="m-total">0</div>
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Total tasks</div>
+            <div class="stat-val" id="stat-total">0</div>
         </div>
-        <div class="metric">
-            <div class="metric-label">Completed</div>
-            <div class="metric-val green" id="m-done">0</div>
+        <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-val green" id="stat-completed">0</div>
         </div>
-        <div class="metric">
-            <div class="metric-label">Pending / retrying</div>
-            <div class="metric-val amber" id="m-active">0</div>
+        <div class="stat-card">
+            <div class="stat-label">Pending / retrying</div>
+            <div class="stat-val orange" id="stat-active">0</div>
         </div>
-        <div class="metric">
-            <div class="metric-label">Failed</div>
-            <div class="metric-val red" id="m-fail">0</div>
+        <div class="stat-card">
+            <div class="stat-label">Failed</div>
+            <div class="stat-val red" id="stat-failed">0</div>
         </div>
     </div>
 
@@ -421,195 +400,182 @@
         <div class="workers-grid" id="workers-grid"></div>
     </div>
 
-    <!-- Submit + Log -->
-    <div class="two-col">
-        <div>
-            <div class="section-label">Submit task</div>
-            <div class="card">
+    <!-- Submit -->
+    <div>
+        <div class="section-label">Submit task</div>
+        <div class="card">
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Task data</label>
-                    <input type="text" id="task-data" placeholder="e.g. process-order-42" />
-                    <span class="form-hint">Sent as: POST /task?data=…</span>
+                    <label>Type</label>
+                    <select id="type">
+                        <option value="PROCESS_DATA">Process Data</option>
+                        <option value="GENERATE_REPORT">Generate Report</option>
+                        <option value="LONG_TASK">Long Task</option>
+                    </select>
                 </div>
-                <button class="submit-btn" id="submit-btn" onclick="submitTask()">Dispatch task →</button>
-                <div class="toast" id="toast"></div>
-                <div class="api-note">
-                    Submits to <strong>POST /task?data=…</strong> then polls
-                    <strong>GET /task/{id}</strong> every 2s until COMPLETED or FAILED.
-                    Max retries: 3.
+                <div class="form-group" style="flex:1">
+                    <label>Data</label>
+                    <input type="text" id="data" placeholder="Enter task data">
                 </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="log-header">
-                <div class="section-label" style="margin-bottom:0">Task history</div>
-                <button class="poll-btn" onclick="pollAll()">↻ Refresh all</button>
-            </div>
-            <div class="log-list" id="log-list">
-                <div class="empty-state">No tasks yet — dispatch one to get started.</div>
+                <button onclick="createTask()">Dispatch task →</button>
             </div>
         </div>
     </div>
 
-</main>
+    <!-- Table -->
+    <div>
+        <div class="section-label">Task history</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Retries</th>
+                </tr>
+                </thead>
+                <tbody id="taskTable">
+                <tr class="empty-row"><td colspan="4">No tasks yet — dispatch one to get started.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 
 <script>
+    let tasks = {};
+
     const WORKERS = [
-      { id: "worker-1", status: "idle", task: "—", progress: 0, tasks: 0 },
-      { id: "worker-2", status: "idle", task: "—", progress: 0, tasks: 0 },
-      { id: "worker-3", status: "idle", task: "—", progress: 0, tasks: 0 },
+      { id: "worker-1", status: "idle", task: "—", progress: 0, handled: 0 },
+      { id: "worker-2", status: "idle", task: "—", progress: 0, handled: 0 },
+      { id: "worker-3", status: "idle", task: "—", progress: 0, handled: 0 },
     ];
-
-    let tasks = [];
     let workerCursor = 0;
-
-    function getBase() {
-      return document.getElementById("base-url").value.replace(/\/$/, "");
-    }
 
     function renderWorkers() {
       document.getElementById("workers-grid").innerHTML = WORKERS.map(w => `
         <div class="worker-card">
           <div class="worker-header">
             <span class="worker-id">${w.id}</span>
-            <span class="badge badge-${w.status}">${w.status}</span>
+            <span class="w-badge ${w.status === 'busy' ? 'w-busy' : w.status === 'error' ? 'w-error' : 'w-idle'}">${w.status}</span>
           </div>
           <div class="worker-task">${w.task}</div>
-          <div class="progress-bar">
-            <div class="progress-fill ${w.status === 'busy' ? 'pf-green' : w.status === 'error' ? 'pf-amber' : 'pf-gray'}"
+          <div class="worker-progress">
+            <div class="worker-progress-fill ${w.status === 'busy' ? 'wpf-green' : w.status === 'error' ? 'wpf-amber' : 'wpf-gray'}"
                  style="width:${w.progress}%"></div>
           </div>
-          <div class="worker-meta">Tasks handled: ${w.tasks}</div>
+          <div class="worker-meta">Tasks handled: ${w.handled}</div>
         </div>`).join("");
     }
 
-    function renderLogs() {
-      const el = document.getElementById("log-list");
-      if (!tasks.length) {
-        el.innerHTML = '<div class="empty-state">No tasks yet — dispatch one to get started.</div>';
-        return;
-      }
-      el.innerHTML = tasks.slice().reverse().map(t => `
-        <div class="log-row" onclick="pollOne('${t.id}')">
-          <div class="log-dot dot-${t.status || 'local'}"></div>
-          <div class="log-info">
-            <div class="log-name">${t.id}</div>
-            <div class="log-meta">data: ${t.data} &middot; ${t.time}</div>
-          </div>
-          <div class="log-right">
-            <span class="status-pill pill-${t.status || 'local'}">${t.status || 'submitted'}</span>
-            ${t.retries > 0 ? `<span class="retry-badge">retry ${t.retries}/3</span>` : ''}
-          </div>
-        </div>`).join("");
-      updateMetrics();
-    }
-
-    function updateMetrics() {
-      document.getElementById("m-total").textContent = tasks.length;
-      document.getElementById("m-done").textContent = tasks.filter(t => t.status === "COMPLETED").length;
-      document.getElementById("m-active").textContent = tasks.filter(t => t.status === "PENDING" || t.status === "RETRYING").length;
-      document.getElementById("m-fail").textContent = tasks.filter(t => t.status === "FAILED").length;
-    }
-
-    function showToast(msg, type) {
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.className = "toast " + type;
-      setTimeout(() => { t.className = "toast"; }, 3500);
-    }
-
-    async function submitTask() {
-      const data = document.getElementById("task-data").value.trim();
-      if (!data) { showToast("Enter task data first", "err"); return; }
-      const btn = document.getElementById("submit-btn");
-      btn.disabled = true;
-      btn.textContent = "Dispatching…";
-      try {
-        const res = await fetch(`${getBase()}/task?data=${encodeURIComponent(data)}`, { method: "POST" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        const task = { id: json.id, data, status: json.status || "PENDING", retries: 0, time: "just now" };
-        tasks.push(task);
-        assignWorker(task);
-        renderLogs();
-        showToast(`Task ${json.id} dispatched — ${json.status}`, "ok");
-        document.getElementById("task-data").value = "";
-        startPolling(task.id);
-      } catch (e) {
-        showToast(`Error: ${e.message} — is Spring Boot running on ${getBase()}?`, "err");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Dispatch task →";
-      }
-    }
-
-    function assignWorker(task) {
+    function assignWorker(taskData) {
       const w = WORKERS[workerCursor % 3];
       workerCursor++;
-      w.status = "busy"; w.task = task.data; w.progress = 10; w.tasks++;
-      task._worker = w.id;
+      w.status = "busy"; w.task = taskData; w.progress = 10; w.handled++;
       renderWorkers();
+      return w.id;
     }
 
-    function freeWorker(wid) {
-      const w = WORKERS.find(x => x.id === wid);
-      if (w) { w.status = "idle"; w.task = "—"; w.progress = 0; }
-      renderWorkers();
-    }
-
-    function startPolling(id) {
-      let attempts = 0;
-      const iv = setInterval(async () => {
-        attempts++;
-        const t = tasks.find(x => x.id === id);
-        if (!t) { clearInterval(iv); return; }
-        if (t.status === "COMPLETED" || t.status === "FAILED") {
-          if (t._worker) freeWorker(t._worker);
-          clearInterval(iv); return;
-        }
-        if (attempts > 30) { clearInterval(iv); return; }
-        try {
-          const res = await fetch(`${getBase()}/task/${id}`);
-          if (!res.ok) return;
-          const json = await res.json();
-          t.status = json.status;
-          if (json.retryCount !== undefined) t.retries = json.retryCount;
-          const w = WORKERS.find(x => x.id === t._worker);
-          if (w && t.status === "RETRYING") { w.status = "busy"; w.progress = Math.min(85, w.progress + 20); }
-          if (t.status === "COMPLETED" && w) { w.progress = 100; }
-          renderLogs(); renderWorkers();
-        } catch (e) {}
-      }, 2000);
-    }
-
-    async function pollOne(id) {
-      try {
-        const res = await fetch(`${getBase()}/task/${id}`);
-        if (!res.ok) return;
-        const json = await res.json();
-        const t = tasks.find(x => x.id === id);
-        if (t) { t.status = json.status; if (json.retryCount !== undefined) t.retries = json.retryCount; }
-        renderLogs();
-      } catch (e) {}
-    }
-
-    async function pollAll() {
-      for (const t of tasks) {
-        if (t.status !== "COMPLETED" && t.status !== "FAILED") await pollOne(t.id);
+    function syncWorkerToTask(taskId) {
+      const task = tasks[taskId];
+      if (!task || !task._worker) return;
+      const w = WORKERS.find(x => x.id === task._worker);
+      if (!w) return;
+      if (task.status === "COMPLETED") {
+        w.progress = 100;
+        setTimeout(() => { w.status = "idle"; w.task = "—"; w.progress = 0; renderWorkers(); }, 800);
+      } else if (task.status === "FAILED") {
+        w.status = "error"; w.progress = 30;
+        setTimeout(() => { w.status = "idle"; w.task = "—"; w.progress = 0; renderWorkers(); }, 1200);
+      } else if (task.status === "RETRYING") {
+        w.progress = Math.min(85, w.progress + 15);
       }
+      renderWorkers();
     }
 
-    // Animate worker progress bars
     setInterval(() => {
       WORKERS.forEach(w => {
-        if (w.status === "busy" && w.progress < 90) w.progress += Math.floor(Math.random() * 8);
+        if (w.status === "busy" && w.progress < 88) w.progress += Math.floor(Math.random() * 6);
       });
       renderWorkers();
     }, 1500);
 
     renderWorkers();
-    renderLogs();
+
+    function createTask() {
+      const data = document.getElementById("data").value;
+      const type = document.getElementById("type").value;
+      if (!data) {
+        alert("Enter task data");
+        return;
+      }
+      fetch(`/task?type=${type}&data=${encodeURIComponent(data)}`, {
+        method: "POST"
+      })
+      .then(res => res.json())
+      .then(task => {
+        const wid = assignWorker(data);
+        tasks[task.id] = { ...task, type, _worker: wid };
+        updateTable();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error creating task");
+      });
+    }
+
+    function updateTable() {
+      const table = document.getElementById("taskTable");
+      const entries = Object.values(tasks);
+
+      if (!entries.length) {
+        table.innerHTML = '<tr class="empty-row"><td colspan="4">No tasks yet — dispatch one to get started.</td></tr>';
+        updateStats(entries);
+        return;
+      }
+
+      table.innerHTML = entries.slice().reverse().map(task => {
+        const retries = task.retryCount || 0;
+        const pct = Math.min(100, (retries / 3) * 100);
+        return `
+          <tr>
+            <td><span class="task-id">${task.id}</span></td>
+            <td><span class="type-badge">${task.type}</span></td>
+            <td><span class="status-pill ${task.status}"><span class="status-dot"></span>${task.status}</span></td>
+            <td>
+              <div class="retry-bar-wrap">
+                <span class="retry-val">${retries}/3</span>
+                <div class="retry-bar"><div class="retry-bar-fill" style="width:${pct}%"></div></div>
+              </div>
+            </td>
+          </tr>`;
+      }).join("");
+
+      updateStats(entries);
+    }
+
+    function updateStats(entries) {
+      document.getElementById("stat-total").textContent     = entries.length;
+      document.getElementById("stat-completed").textContent = entries.filter(t => t.status === "COMPLETED").length;
+      document.getElementById("stat-active").textContent    = entries.filter(t => t.status === "PENDING" || t.status === "RETRYING").length;
+      document.getElementById("stat-failed").textContent    = entries.filter(t => t.status === "FAILED").length;
+    }
+
+    function pollStatus() {
+      Object.keys(tasks).forEach(id => {
+        fetch(`/task/${id}`)
+        .then(res => res.json())
+        .then(task => {
+          tasks[id] = { ...tasks[id], ...task };
+          syncWorkerToTask(id);
+          updateTable();
+        });
+      });
+    }
+
+    setInterval(pollStatus, 2000);
 </script>
 
 </body>

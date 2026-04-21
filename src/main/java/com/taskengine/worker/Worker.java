@@ -13,40 +13,59 @@ import java.util.concurrent.Executors;
 public class Worker {
 
     private final TaskQueueService queueService;
-
     private final ExecutorService executor = Executors.newFixedThreadPool(3);
 
-    public Worker(TaskQueueService queueService){
+    public Worker(TaskQueueService queueService) {
         this.queueService = queueService;
     }
 
     @PostConstruct
     public void startWorkers() {
 
-        for(int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 3; i++) {
 
             int workerId = i;
 
             executor.submit(() -> {
 
-                while(true) {
+                while (true) {
 
-                    Task redisTask = queueService.getTask();
+                    Task task = queueService.getTask();
 
-                    if(redisTask == null) continue;
-
-                    Task task = queueService.getExistingTask(redisTask.getId());
-                    if(task == null) continue;
+                    if (task == null) continue;
 
                     System.out.println("Worker-" + workerId + " Processing: " + task.getId());
 
                     try {
-                        if(Math.random() < 0.5){
+
+                        // 🔥 Simulate random failure (for testing retry)
+                        if (Math.random() < 0.5) {
                             throw new RuntimeException("Simulated failure");
                         }
 
-                        Thread.sleep(3000);
+                        // Simulate work
+                        switch (task.getType()) {
 
+                            case "PROCESS_DATA":
+                                System.out.println("Processing data: " + task.getData());
+                                Thread.sleep(2000);
+                                break;
+
+                            case "GENERATE_REPORT":
+                                System.out.println("Generating report: " + task.getData());
+                                Thread.sleep(4000);
+                                break;
+
+                            case "LONG_TASK":
+                                System.out.println("Running long task...");
+                                Thread.sleep(6000);
+                                break;
+
+                            default:
+                                throw new RuntimeException("Unknown task type");
+                        }
+
+                        // ✅ Success
                         task.setStatus("COMPLETED");
                         queueService.updateTask(task);
 
@@ -54,7 +73,7 @@ public class Worker {
 
                         task.incrementRetry();
 
-                        if(task.getRetryCount() <= 3){
+                        if (task.getRetryCount() <= 3) {
 
                             System.out.println("Retrying: " + task.getId() +
                                     " attempt " + task.getRetryCount());
@@ -62,7 +81,8 @@ public class Worker {
                             task.setStatus("RETRYING");
                             queueService.updateTask(task);
 
-                            queueService.addTask(task);
+                            // 🔥 Re-add ONLY to queue (correct retry)
+                            queueService.pushToQueue(task);
 
                         } else {
 
