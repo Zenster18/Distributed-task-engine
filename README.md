@@ -1,121 +1,76 @@
-# 🚀 Distributed Task Execution Engine
+# 🚀 Distributed Task Engine
 
-## 🧠 Overview
-
-A scalable backend system that processes tasks asynchronously using a **Redis-based distributed queue** and **multi-threaded workers**.
-Designed to simulate real-world task processing systems like job schedulers, background workers, and distributed execution pipelines.
+A **distributed task execution system** built using **Spring Boot + Redis**, supporting asynchronous processing, retry mechanisms, and real-time task tracking via a web dashboard.
 
 ---
 
-## ⚙️ Features
+## 📌 Overview
+
+This project demonstrates a **producer-consumer architecture** where tasks are:
+
+* Submitted via REST API
+* Queued in Redis
+* Processed asynchronously by worker threads
+* Tracked in real-time through a frontend dashboard
+
+---
+
+## 🧠 Architecture
+
+```
+Client → Spring Boot API → Redis Queue → Worker Pool → Redis Store → UI
+```
+
+* **Producer** → Controller
+* **Broker** → Redis (LIST)
+* **Consumer** → Worker threads
+* **State Store** → Redis (HASH)
+
+---
+
+## ⚙️ Tech Stack
+
+* **Backend:** Spring Boot
+* **Queue & Storage:** Redis
+* **Concurrency:** ExecutorService (Thread Pool)
+* **Frontend:** HTML, CSS, JavaScript
+* **Containerization:** Docker
+
+---
+
+## 🔥 Features
 
 * ✅ Asynchronous task processing
-* ✅ Redis-based distributed queue
-* ✅ Multi-threaded worker system
-* ✅ Blocking queue behavior (efficient, no CPU polling)
-* ✅ Retry mechanism with max retry limit
-* ✅ Task lifecycle tracking
-
-  * `PENDING`
-  * `RETRYING`
-  * `COMPLETED`
-  * `FAILED`
-* ✅ REST APIs for task creation and tracking
+* ✅ Redis-based queue (FIFO using LIST)
+* ✅ Blocking queue (efficient worker consumption)
+* ✅ Multi-threaded worker pool
+* ✅ Retry mechanism (max 3 attempts)
+* ✅ Task status tracking (PENDING → RETRYING → COMPLETED / FAILED)
+* ✅ Frontend dashboard with live updates
+* ✅ Dockerized Redis setup
 
 ---
 
-## 🏗️ System Architecture
+## 🔄 Task Lifecycle
 
-```plaintext
-Client → Controller → Redis Queue → Workers → Processing → Status Update
 ```
-
-### 🔄 Flow
-
-1. Client submits task via API
-2. Task is pushed to Redis queue
-3. Workers continuously listen (blocking)
-4. Task is processed asynchronously
-5. On failure → retried up to limit
-6. Final status stored and returned via API
-
----
-
-## 🛠️ Tech Stack
-
-* **Java 17**
-* **Spring Boot**
-* **Redis (Docker)**
-* **Multithreading**
-* **Concurrent Data Structures**
-* **REST APIs**
-
----
-
-## 🔌 API Endpoints
-
-### ➕ Create Task
-
-```http
-POST /task?data=example
-```
-
-**Response:**
-
-```json
-{
-  "id": "task-id",
-  "status": "PENDING"
-}
+PENDING → RETRYING → COMPLETED
+                ↘ FAILED
 ```
 
 ---
 
-### 🔍 Get Task Status
-
-```http
-GET /task/{id}
-```
-
-**Response:**
-
-```json
-{
-  "id": "task-id",
-  "status": "COMPLETED"
-}
-```
-
----
-
-## 🔁 Retry Mechanism
-
-* Tasks are retried automatically on failure
-* Max retry limit: **3 attempts**
-* After limit → marked as `FAILED`
-
----
-
-## ⚡ Key Highlights
-
-* Uses **Redis as external queue** → enables scalability
-* Implements **blocking queue behavior (BLPOP)** → efficient processing
-* Handles failures using **retry strategy**
-* Demonstrates **real-world distributed system design patterns**
-
----
-
-## 🚀 How to Run
+## 🚀 Getting Started
 
 ### 1️⃣ Start Redis (Docker)
 
 ```bash
-docker run -d -p 6379:6379 redis
+docker run -d -p 6379:6379 --name redis-container redis
 ```
 
 ---
 
-### 2️⃣ Run Application
+### 2️⃣ Run Backend
 
 ```bash
 mvn spring-boot:run
@@ -123,52 +78,97 @@ mvn spring-boot:run
 
 ---
 
-### 3️⃣ Test API
+### 3️⃣ Open Dashboard
 
-```http
-POST http://localhost:8080/task?data=test
+```
+http://localhost:8080
 ```
 
 ---
 
-## 🧪 Sample Output (Console)
+## 📡 API Endpoints
 
-```plaintext
-Worker-1 Processing: 123
-Retrying: 123 attempt 1
-Worker-2 Processing: 123
-COMPLETED
+### ➕ Create Task
+
+```
+POST /task?type=PROCESS_DATA&data=test
 ```
 
 ---
 
-## 📌 Future Improvements
+### 🔍 Get Task Status
 
-* 🔥 Replace threads with **ExecutorService (thread pool)**
-* 🔥 Store task status fully in Redis (persistent system)
-* 🔥 Implement Dead Letter Queue (DLQ)
-* 🔥 Add priority queue support
-* 🔥 Add monitoring (metrics/logging dashboard)
+```
+GET /task/{id}
+```
+
+---
+
+## 🧪 Example Flow
+
+1. Create task via API/UI
+2. Task enters Redis queue
+3. Worker processes task
+4. Status updates in Redis
+5. UI polls and displays progress
+
+---
+
+## 🧠 Design Decisions
+
+### 🔹 Why Redis?
+
+* Extremely fast (in-memory)
+* Supports queue operations (LIST)
+* Enables decoupled architecture
+
+### 🔹 Why Blocking Pop?
+
+* Avoids CPU-intensive polling
+* Workers wait efficiently for tasks
+
+### 🔹 Why ExecutorService?
+
+* Manages thread pool efficiently
+* Avoids overhead of manual thread creation
+
+---
+
+## ⚠️ Limitations
+
+* No worker crash recovery (no visibility timeout)
+* Polling-based UI (no WebSockets)
+* No priority queue
+* No dead-letter queue (can be added for production)
+
+---
+
+## 🚀 Future Improvements
+
+* Add Dead Letter Queue (DLQ)
+* Implement WebSocket-based real-time updates
+* Add task timeout & reprocessing
+* Introduce priority-based queueing
+* Add monitoring & metrics (Prometheus/Grafana)
 
 ---
 
 ## 🎯 Learning Outcomes
 
-* Distributed system design basics
-* Asynchronous processing
-* Queue-based architectures
-* Fault tolerance & retries
-* Redis integration in backend systems
+* Asynchronous system design
+* Distributed architecture basics
+* Redis as queue + datastore
+* Concurrency handling in Java
+* Failure handling with retries
 
 ---
 
-## 💡 Author
+## 👨‍💻 Author
 
 **Sagnik Bera**
-Computer Science Student | Backend & Systems Enthusiast
 
 ---
 
-## ⭐ If you found this useful
+## ⭐ If you like this project
 
-Give it a ⭐ on GitHub and feel free to fork!
+Give it a star ⭐ and feel free to contribute!
